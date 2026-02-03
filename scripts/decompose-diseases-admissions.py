@@ -1,9 +1,10 @@
 # ==============================================================================
-#                               WRANGLE ADMISSIONS                                  
+#                                  DISEASES                                  
 # ==============================================================================
 
 
 ## ---- Load required libraries ------------------------------------------------
+
 
 import pandas as pd 
 import decompose_disease as dd
@@ -15,6 +16,7 @@ plt.style.use("ggplot")
 
 
 ## ---- Wrangle ----------------------------------------------------------------
+
 
 ### Read in disease admission. Extension is .xls, != engine to be used ----
 ts_diseases = pd.read_excel(
@@ -61,6 +63,7 @@ pneumonia = ts.query("disease == 'New Pneumonia'")
 
 ## ---- ARI Decomposition ------------------------------------------------------
 
+
 ### Make a time-series data ----
 ari = dd.summarise_disease(
     data=ari, ts_index="time", date_format="%B %Y", time_period="M"
@@ -99,6 +102,7 @@ dd.plot_seasonal_subseries(decomposed_ari, disease_name="ARI")
 
 ## ---- AWD Decomposition ------------------------------------------------------
 
+
 ### Make a time-series data ----
 awd = dd.summarise_disease(
     data=awd, ts_index="time", date_format="%B %Y", time_period="M"
@@ -132,7 +136,9 @@ decomposed_awd.plot()
 ### Plot seasonal componet by year ----
 dd.plot_seasonal_subseries(decomposed_awd, disease_name="AWD")
 
-## ---- Measles Decomposition ------------------------------------------------------
+
+## ---- Measles Decomposition --------------------------------------------------
+
 
 ### Make a time-series data ----
 measles = dd.summarise_disease(
@@ -168,7 +174,8 @@ decomposed_measles.plot()
 dd.plot_seasonal_subseries(decomposed_measles, disease_name="Measles")
 
 
-## ---- Measles Decomposition ------------------------------------------------------
+## ---- Measles Decomposition --------------------------------------------------
+
 
 ### Make a time-series data ----
 malaria = dd.summarise_disease(
@@ -204,7 +211,7 @@ decomposed_malaria.plot()
 dd.plot_seasonal_subseries(decomposed_malaria, disease_name="Malaria")
 
 
-## ---- Measles Decomposition ------------------------------------------------------
+## ---- Measles Decomposition --------------------------------------------------
 
 
 ### Make a time-series data ----
@@ -226,8 +233,6 @@ time_plot_pneumonia = dd.create_time_plot(
 ## No transformation required ##
 
 ### Decompose using LOES ----
-#### Enforce index to time stamp ----
-#pneumonia.index = pneumonia.index.to_timestamp()
 
 #### Decompose ----
 decomposed_pneumonia = STL(
@@ -244,5 +249,6 @@ decomposed_pneumonia.plot()
 
 ### Plot seasonal componet by year ----
 dd.plot_seasonal_subseries(decomposed_pneumonia, disease_name="Pneumonia")
+
 
 # ============================== End of Workflow ===============================

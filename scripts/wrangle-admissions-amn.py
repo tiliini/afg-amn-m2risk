@@ -1,8 +1,10 @@
 # ==============================================================================
-#                               WRANGLE ADMISSIONS                                  
+#                               ACUTE MALNUTRITION                                  
 # ==============================================================================
 
+
 ## ---- Load required libraries ------------------------------------------------
+
 
 import pandas as pd 
 from scipy.stats import boxcox
@@ -12,7 +14,9 @@ import calendar
 import matplotlib.pyplot as plt
 plt.style.use("ggplot")
 
+
 ## ---- Acute Malnutrition -----------------------------------------------------
+
 
 ### Read acute malnutrition admissions ----
 amn_admissions = pd.read_excel(
@@ -54,10 +58,11 @@ ts_amn = (
     .sort_index()
 )
 
+
 ## ---- Inspect the time series ------------------------------------------------
 
+
 ### Plot a time plot ----
-#plt.figure()
 plot_amn_time = ts_amn.plot(
     kind="line",
     title="Global acute malnutrition admissions from Jan 2012 - Dec 2024",
@@ -73,7 +78,6 @@ plot_amn_time = ts_amn.plot(
 ts_amn["bx_gam"], lmbda = boxcox(ts_amn.gam, lmbda=None)
 
 ### Plot Box-Cox-transformed data ----
-plt.clf()
 ts_amn["bx_gam"].plot(
     kind="line",
     title="Box-Cox transformed GAM admissions",
@@ -87,6 +91,7 @@ plt.show()
 
 
 ## ---- Decompostion -----------------------------------------------------------
+
 
 ### Decompose using LOES ----
 amn_decomposed = STL(
@@ -104,10 +109,11 @@ amn_decomposed = pd.DataFrame({
     "resid": inv_boxcox(amn_decomposed.resid, lmbda)
 })
 
+
 ## ---- Visualise results ------------------------------------------------------
 
+
 ### Plot decomposed components ----
-plt.clf()
 plt.rcParams["figure.figsize"] = (12, 6.5)
 plot_amn_components = amn_decomposed.plot(
     subplots=True,
