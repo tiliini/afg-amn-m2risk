@@ -6,6 +6,7 @@
 
 import pandas as pd 
 from scipy.stats import boxcox
+from scipy.special import inv_boxcox
 from statsmodels.tsa.seasonal import STL
 import matplotlib.pyplot as plt
 plt.style.use("ggplot")
@@ -55,7 +56,7 @@ ts_amn = (
 ## ---- Inspect the time series ------------------------------------------------
 
 ### Plot a time plot ----
-plt.figure()
+#plt.figure()
 plot_amn_time = ts_amn.plot(
     kind="line",
     title="Global acute malnutrition admissions from Jan 2012 - Dec 2024",
@@ -94,13 +95,25 @@ amn_decomposed = STL(
     robust=False
 ).fit()
 
+### Back transform Box-Cox to its original unit ----
+amn_decomposed = pd.DataFrame({
+    "observed": inv_boxcox(amn_decomposed.observed, lmbda),
+    "trend": inv_boxcox(amn_decomposed.trend, lmbda),
+    "seasonal": inv_boxcox(amn_decomposed.seasonal, lmbda),
+    "resid": inv_boxcox(amn_decomposed.resid, lmbda)
+})
 
 ## ---- Visualise results ------------------------------------------------------
 
 ### Plot decomposed components ----
 plt.clf()
 plt.rcParams["figure.figsize"] = (12, 6.5)
-plot_amn_components = amn_decomposed.plot()
-plt.show()
+plot_amn_components = amn_decomposed.plot(
+    subplots=True,
+    title="Decomposed components",
+    xlabel="Time [M]"
+)
+
+### Plot seasonal componet by year ----
 
 # ============================== End of Workflow ===============================
