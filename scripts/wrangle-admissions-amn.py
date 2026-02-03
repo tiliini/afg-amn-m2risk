@@ -8,6 +8,7 @@ import pandas as pd
 from scipy.stats import boxcox
 from scipy.special import inv_boxcox
 from statsmodels.tsa.seasonal import STL
+import calendar
 import matplotlib.pyplot as plt
 plt.style.use("ggplot")
 
@@ -115,5 +116,32 @@ plot_amn_components = amn_decomposed.plot(
 )
 
 ### Plot seasonal componet by year ----
+seasonal = amn_decomposed.seasonal.copy()
+
+### Extract Year and Month
+seasonal = pd.DataFrame(
+    {
+        "seasonal_effect": seasonal,
+        "year": seasonal.index.year,
+        "month": seasonal.index.month
+    }
+).pivot(
+    index="month",
+    columns="year",
+    values="seasonal_effect"
+)
+
+### Replace numeric index with month abbreviations ----
+seasonal.index = seasonal.index.map(lambda m: calendar.month_abbr[m])
+
+### Plot subseries ----
+seasonal_plot = seasonal.plot(
+    figsize=(12, 6.5),
+    title="Seasonal Component by Year",
+    xlabel="Time [M]",
+    ylabel="Seasonal effect",
+    legend=True
+)
+
 
 # ============================== End of Workflow ===============================
