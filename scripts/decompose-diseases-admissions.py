@@ -7,7 +7,7 @@
 
 
 import pandas as pd 
-import decompose_disease as dd
+import modules.decompose_disease as dec
 from statsmodels.tsa.seasonal import STL
 import sys
 sys.path.append("python")
@@ -65,14 +65,14 @@ pneumonia = ts.query("disease == 'New Pneumonia'")
 
 
 ### Make a time-series data ----
-ari = dd.summarise_disease(
+ari = dec.summarise_disease(
     data=ari, ts_index="time", date_format="%B %Y", time_period="M"
 )
 
 ### Inspect the time series ----
 
 #### Plot a time plot ----
-plot = dd.create_time_plot(
+plot = dec.create_time_plot(
     data=ari,
     start="Jan 2021",
     end="Dec 2024",
@@ -97,21 +97,21 @@ plt.rcParams["figure.figsize"] = (12, 6.5)
 decomposed_ari.plot()
 
 ### Plot seasonal componet by year ----
-dd.plot_seasonal_subseries(decomposed_ari, disease_name="ARI")
+dec.plot_seasonal_subseries(decomposed_ari, disease_name="ARI")
 
 
 ## ---- AWD Decomposition ------------------------------------------------------
 
 
 ### Make a time-series data ----
-awd = dd.summarise_disease(
+awd = dec.summarise_disease(
     data=awd, ts_index="time", date_format="%B %Y", time_period="M"
 )
 
 ### Inspect the time series ----
 
 #### Plot a time plot ----
-time_plot_awd = dd.create_time_plot(
+time_plot_awd = dec.create_time_plot(
     data=awd,
     start="Jan 2021",
     end="Dec 2024",
@@ -134,21 +134,21 @@ plt.rcParams["figure.figsize"] = (12, 6.5)
 decomposed_awd.plot()
 
 ### Plot seasonal componet by year ----
-dd.plot_seasonal_subseries(decomposed_awd, disease_name="AWD")
+dec.plot_seasonal_subseries(decomposed_awd, disease_name="AWD")
 
 
 ## ---- Measles Decomposition --------------------------------------------------
 
 
 ### Make a time-series data ----
-measles = dd.summarise_disease(
+measles = dec.summarise_disease(
     data=measles, ts_index="time", date_format="%B %Y", time_period="M"
 )
 
 ### Inspect the time series ----
 
 #### Plot a time plot ----
-time_plot_measles = dd.create_time_plot(
+time_plot_measles = dec.create_time_plot(
     data=measles,
     start="Jan 2021",
     end="Dec 2024",
@@ -171,21 +171,21 @@ plt.rcParams["figure.figsize"] = (12, 6.5)
 decomposed_measles.plot()
 
 ### Plot seasonal componet by year ----
-dd.plot_seasonal_subseries(decomposed_measles, disease_name="Measles")
+dec.plot_seasonal_subseries(decomposed_measles, disease_name="Measles")
 
 
 ## ---- Measles Decomposition --------------------------------------------------
 
 
 ### Make a time-series data ----
-malaria = dd.summarise_disease(
+malaria = dec.summarise_disease(
     data=malaria, ts_index="time", date_format="%B %Y", time_period="M"
 )
 
 ### Inspect the time series ----
 
 #### Plot a time plot ----
-time_plot_malaria = dd.create_time_plot(
+time_plot_malaria = dec.create_time_plot(
     data=malaria,
     start="Jan 2021",
     end="Dec 2024",
@@ -208,21 +208,21 @@ plt.rcParams["figure.figsize"] = (12, 6.5)
 decomposed_malaria.plot()
 
 ### Plot seasonal componet by year ----
-dd.plot_seasonal_subseries(decomposed_malaria, disease_name="Malaria")
+dec.plot_seasonal_subseries(decomposed_malaria, disease_name="Malaria")
 
 
 ## ---- Measles Decomposition --------------------------------------------------
 
 
 ### Make a time-series data ----
-pneumonia = dd.summarise_disease(
+pneumonia = dec.summarise_disease(
     data=pneumonia, ts_index="time", date_format="%B %Y", time_period="M"
 )
 
 ### Inspect the time series ----
 
 #### Plot a time plot ----
-time_plot_pneumonia = dd.create_time_plot(
+time_plot_pneumonia = dec.create_time_plot(
     data=pneumonia,
     start="Jan 2021",
     end="Dec 2024",
@@ -248,7 +248,7 @@ plt.rcParams["figure.figsize"] = (12, 6.5)
 decomposed_pneumonia.plot()
 
 ### Plot seasonal componet by year ----
-dd.plot_seasonal_subseries(decomposed_pneumonia, disease_name="Pneumonia")
+dec.plot_seasonal_subseries(decomposed_pneumonia, disease_name="Pneumonia")
 
 
 # ============================== End of Workflow ===============================
