@@ -139,71 +139,97 @@ def apply_stl_decomposition(
     decompose,
     seasonal,
     period,
-    #index,
-    scope=["single", "multiple"],
-    #date_format="%B %Y",
-    #frequency="M",
-    #analysis_unit="",
+    scope="single",
+    analysis_unit="",
 ):
     """
     Apply STL decomposition dynamically
 
     Parameters
     ----------
-
     data: DataFrame to be decomposed, returned by `summarise_admissions()`.
 
     decompose: str
-    A variable name holding the phenomenon to be decomposed.
+        A variable name holding the phenomenon to be decomposed.
 
     seasonal: int
-    Lenght of the seasonal smoother. It should be >= 7.
+        Length of the seasonal smoother. It should be >= 7.
 
     period: int
-    Periodicity of the sequence of the phenomenon to be decomposed.
+        Periodicity of the sequence of the phenomenon to be decomposed.
 
     scope: str
-    The scope of the decomposition. Whether a single-area or multiple-area decompostion.
-
+        The scope of the decomposition. Whether a single-area or multiple-area decomposition.
     """
 
-    ### Code block for single-area decomposition ----
-    if scope == "single":
+## ---- Helper function to comply with DRY -------------------------------------
 
-        #### Check whether a Box-Cox tranformation is required ----
-        ##### Get the lambda's confidence intervals to be checked ----
+    def decompose_series(series):
+        """Decompose a single time series with Box-Cox decision."""
+
+        ### Estimate lamba and its 95% confidence intervals ----
         data["box_coxed"], lmbda, ci = boxcox(
-            x=data[decompose], 
-            lmbda=None, 
-            alpha=0.05
+            x=data[decompose], lmbda=None, alpha=0.05
         )
 
-        #### If 1 is not contained in the CI, no transformation is justified ----
-        if 1 not in [ci[0], ci[1]]:
+        ### Decide whether to transform ----
+        ci_contains_1 = (ci[0] <= 1 <= ci[1])
+
+        if ci_contains_1:
             decomposed = STL(
-                data[decompose], 
-                seasonal=seasonal, 
-                period=period, 
-                robust=False
-            ).fit()
-        else: ## Decompose Box-Cox-transformed data ----
-            decomposed = STL(
-                data.box_coxed,
-                seasonal=seasonal,
-                period=period,
-                robust=False
+                data[decompose], seasonal=seasonal, period=period, robust=False
             ).fit()
 
-            ### Reverse transformation to its original scale ----
+            ### Return trend ----
+            return decomposed.trend
+
+        else:
+            ### Decompose Box-Cox-transformed data ----
+            decomposed = STL(
+                data.box_coxed, seasonal=seasonal, period=period, robust=False
+            ).fit()
+
+            ### Reverse transformation to original scale ----
             decomposed = pd.DataFrame(
                 {
                     "observed": inv_boxcox(decomposed.observed, lmbda),
                     "trend": inv_boxcox(decomposed.trend, lmbda),
                     "seasonal": inv_boxcox(decomposed.seasonal, lmbda),
-                    "resid": inv_boxcox(decomposed.resid, lmbda)
+                    "resid": inv_boxcox(decomposed.resid, lmbda),
                 }
             )
 
-    return decomposed
+            ### Return trend ----
+            return decomposed.trend
 
 
+## ---- Single-area decomposition ----------------------------------------------
+
+
+    if scope == "single":
+        return decompose_series(series=data[decompose])
+
+
+## ---- Single-area decomposition ----------------------------------------------
+
+
+    elif scope == "multiple":
+
+        if analysis_unit is None:
+            raise ValueError("analysis_unit must be provided for multiple-area scope.")
+
+        ### List of unique analysis units ----
+        units = data.analysis_unit.unique()
+
+        ### Initialise results container ----
+        results = {}
+
+        ### Loop over ----
+        for unit in units:
+            subset = data.query(f"{analysis_unit} == @unit")
+            results[unit] = decompose_series(subset[decompose])
+
+        return results
+
+    else:
+        raise ValueError("scope must be 'single' or 'multiple'")
