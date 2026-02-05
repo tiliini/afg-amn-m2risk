@@ -1,5 +1,8 @@
 import pandas as pd
 import calendar
+from scipy.stats import boxcox
+from scipy.special import inv_boxcox
+from statsmodels.tsa.seasonal import STL
 
 
 def plot_seasonal_subseries(decomposed, disease_name=""):
@@ -134,10 +137,73 @@ def create_time_plot(data, start, end, disease="ARI", time="M"):
 def apply_stl_decomposition(
     data,
     decompose,
-    index,
-    analysis_unit,
+    seasonal,
+    period,
+    #index,
     scope=["single", "multiple"],
-    date_format="%B %Y",
-    frequency="M",
+    #date_format="%B %Y",
+    #frequency="M",
+    #analysis_unit="",
 ):
-    return
+    """
+    Apply STL decomposition dynamically
+
+    Parameters
+    ----------
+
+    data: DataFrame to be decomposed, returned by `summarise_admissions()`.
+
+    decompose: str
+    A variable name holding the phenomenon to be decomposed.
+
+    seasonal: int
+    Lenght of the seasonal smoother. It should be >= 7.
+
+    period: int
+    Periodicity of the sequence of the phenomenon to be decomposed.
+
+    scope: str
+    The scope of the decomposition. Whether a single-area or multiple-area decompostion.
+
+    """
+
+    ### Code block for single-area decomposition ----
+    if scope == "single":
+
+        #### Check whether a Box-Cox tranformation is required ----
+        ##### Get the lambda's confidence intervals to be checked ----
+        data["box_coxed"], lmbda, ci = boxcox(
+            x=data[decompose], 
+            lmbda=None, 
+            alpha=0.05
+        )
+
+        #### If 1 is not contained in the CI, no transformation is justified ----
+        if 1 not in [ci[0], ci[1]]:
+            decomposed = STL(
+                data[decompose], 
+                seasonal=seasonal, 
+                period=period, 
+                robust=False
+            ).fit()
+        else: ## Decompose Box-Cox-transformed data ----
+            decomposed = STL(
+                data.box_coxed,
+                seasonal=seasonal,
+                period=period,
+                robust=False
+            ).fit()
+
+            ### Reverse transformation to its original scale ----
+            decomposed = pd.DataFrame(
+                {
+                    "observed": inv_boxcox(decomposed.observed, lmbda),
+                    "trend": inv_boxcox(decomposed.trend, lmbda),
+                    "seasonal": inv_boxcox(decomposed.seasonal, lmbda),
+                    "resid": inv_boxcox(decomposed.resid, lmbda)
+                }
+            )
+
+    return decomposed
+
+
