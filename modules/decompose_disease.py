@@ -5,13 +5,13 @@ import calendar
 def plot_seasonal_subseries(decomposed, disease_name=""):
     """
     Plot a seasonal subseries (one line per year) from an STL decomposition.
-    
+
     Parameters
     ----------
     decomposed : STL decomposition result
         The object returned by STL(...).fit()
         Must have a MultiIndex with levels ["disease", "time"].
-    
+
     disease_name : str
         Name of the disease to extract (optional if already sliced).
     """
@@ -27,18 +27,16 @@ def plot_seasonal_subseries(decomposed, disease_name=""):
             raise ValueError("Expected MultiIndex with a 'time' level.")
 
     ## Build tidy DataFrame ----
-    df = pd.DataFrame({
-        "seasonal_effect": seasonal,
-        "year": seasonal.index.year,
-        "month": seasonal.index.month
-    })
+    df = pd.DataFrame(
+        {
+            "seasonal_effect": seasonal,
+            "year": seasonal.index.year,
+            "month": seasonal.index.month,
+        }
+    )
 
     ## Pivot to get one line per year ----
-    pivot = df.pivot(
-        index="month",
-        columns="year",
-        values="seasonal_effect"
-    )
+    pivot = df.pivot(index="month", columns="year", values="seasonal_effect")
 
     ## Replace month numbers with abbreviations ----
     pivot.index = pivot.index.map(lambda m: calendar.month_abbr[m])
@@ -49,74 +47,74 @@ def plot_seasonal_subseries(decomposed, disease_name=""):
         title=f"Seasonal Component by Year — {disease_name}",
         xlabel="Time [M]",
         ylabel="Seasonal effect",
-        legend=True
+        legend=True,
     )
 
     return ax
 
 
 def summarise_disease(data, ts_index, date_format="%B %Y", time_period="M"):
-        """
-        Summarise admissions and make a time-series dataset.
-        
-        Parameters
-        
-        ----------
-        data : Admissions data to be summarised for downstream analysis
-        
-        ts_index : str
-        A variable to be used to set DateTimeIndex.
+    """
+    Summarise admissions and make a time-series dataset.
 
-        date_format: str
-        The date format expressed in your data.
+    Parameters
 
-        time_period: str
-        Whether monthl-, week-, day, quarter-based admissions. Defaults to "M" 
-        for month. 
+    ----------
+    data : Admissions data to be summarised for downstream analysis
 
-        """
-        ts = (
-        data
-        .assign(
-        time=lambda x: pd.to_datetime(x[ts_index], format=date_format)\
-            .dt.to_period(time_period)
+    ts_index : str
+    A variable to be used to set DateTimeIndex.
+
+    date_format: str
+    The date format expressed in your data.
+
+    time_period: str
+    Whether monthl-, week-, day, quarter-based admissions. Defaults to "M"
+    for month.
+
+    """
+    ts = (
+        data.assign(
+            time=lambda x: pd.to_datetime(x[ts_index], format=date_format).dt.to_period(
+                time_period
             )
+        )
         .query("time.dt.year != 2025")
         .groupby([ts_index], as_index=False)
         .agg({"admission": "sum"})
         .set_index([ts_index])
         .sort_index()
     )
-    
-        ts.index = ts.index.to_timestamp()
-        ts
-        return ts
+
+    ts.index = ts.index.to_timestamp()
+    ts
+    return ts
 
 
 def create_time_plot(data, start, end, disease="ARI", time="M"):
-        """
-        Plot a seasonal subseries (one line per year) from an STL decomposition.
-        
-        Parameters
-        
-        ----------
-        decomposed : A time-series data returned from `summarise_disease()`.
+    """
+    Plot a seasonal subseries (one line per year) from an STL decomposition.
 
-        start: str
-        The starting period of the time series: 'Month Year'
+    Parameters
 
-        end: str
-        The end period of the time series: 'Month Year'
+    ----------
+    decomposed : A time-series data returned from `summarise_disease()`.
 
-        disease: str
-        Indicate the disease under analysis.
-        
-        time : str
-        Whether monthl-, week-, day, quarter-based admissions. Defaults to "M" 
-        for month.
-        
-        """
-        plot = data.plot(
+    start: str
+    The starting period of the time series: 'Month Year'
+
+    end: str
+    The end period of the time series: 'Month Year'
+
+    disease: str
+    Indicate the disease under analysis.
+
+    time : str
+    Whether monthl-, week-, day, quarter-based admissions. Defaults to "M"
+    for month.
+
+    """
+    plot = data.plot(
         kind="line",
         title=f"Admission of {disease} from {start} to {end}",
         ylabel="# of cases",
@@ -124,7 +122,22 @@ def create_time_plot(data, start, end, disease="ARI", time="M"):
         subplots=False,
         fontsize=12,
         figsize=[12, 6.5],
-        legend=False
+        legend=False,
     )
-    
-        return plot
+
+    return plot
+
+
+## ---- Function to apply STL decomposition dynamically ------------------------
+
+
+def apply_stl_decomposition(
+    data,
+    decompose,
+    index,
+    analysis_unit,
+    scope=["single", "multiple"],
+    date_format="%B %Y",
+    frequency="M",
+):
+    return

@@ -1,17 +1,19 @@
 # ==============================================================================
-#                                  DISEASES                                  
+#                                  DISEASES
 # ==============================================================================
 
 
 ## ---- Load required libraries ------------------------------------------------
 
 
-import pandas as pd 
+import pandas as pd
 import modules.decompose_disease as dec
 from statsmodels.tsa.seasonal import STL
 import sys
+
 sys.path.append("python")
 import matplotlib.pyplot as plt
+
 plt.style.use("ggplot")
 
 
@@ -24,34 +26,26 @@ ts_diseases = pd.read_excel(
     sheet_name=0,
     index_col=None,
     parse_dates=False,
-    header=0
+    header=0,
 )
 
 ### Rename and exclude non-disease-related values ----
 ts = (
-    ts_diseases
-    .rename(
-        columns={
-            "OPD morbidity": "disease",
-            "Province ": "province"
-            }
-        )
-    .melt(
-        id_vars=["disease", "province"],
-        var_name="time",
-        value_name="admission"
-        )
+    ts_diseases.rename(columns={"OPD morbidity": "disease", "Province ": "province"})
+    .melt(id_vars=["disease", "province"], var_name="time", value_name="admission")
     .query("disease != 'HMIS-MIAR-OPD- New Patients/Clients'")
 )
 
 ### Recode diseases for easy manipulation ----
-ts["disease"] = ts["disease"].replace({
-    "HMIS-MIAR-OPD- New Acute Watery Diarrhea": "AWD",
-    "HMIS-MIAR-OPD- New Cough and Cold (ARI)": "ARI",
-    "HMIS-MIAR-OPD- New Measles": "Measles",
-    "HMIS-MIAR-OPD- New Malaria": "Malaria",
-    "HMIS-MIAR-OPD- New Pneumonia (ARI)": "New Pneumonia"
-})
+ts["disease"] = ts["disease"].replace(
+    {
+        "HMIS-MIAR-OPD- New Acute Watery Diarrhea": "AWD",
+        "HMIS-MIAR-OPD- New Cough and Cold (ARI)": "ARI",
+        "HMIS-MIAR-OPD- New Measles": "Measles",
+        "HMIS-MIAR-OPD- New Malaria": "Malaria",
+        "HMIS-MIAR-OPD- New Pneumonia (ARI)": "New Pneumonia",
+    }
+)
 
 ### Split disease-specific time seris ----
 ari = ts.query("disease == 'ARI'")
@@ -73,21 +67,12 @@ ari = dec.summarise_disease(
 
 #### Plot a time plot ----
 plot = dec.create_time_plot(
-    data=ari,
-    start="Jan 2021",
-    end="Dec 2024",
-    disease="ARI",
-    time="M"
+    data=ari, start="Jan 2021", end="Dec 2024", disease="ARI", time="M"
 )
 ## No need for box-cox transformatio ##
 
 ### Decompose using LOES ----
-decomposed_ari = STL(
-    ari["admission"],
-    seasonal=7,
-    period = 12,
-    robust=False
-).fit()
+decomposed_ari = STL(ari["admission"], seasonal=7, period=12, robust=False).fit()
 
 ### Visualise results ----
 
@@ -112,22 +97,13 @@ awd = dec.summarise_disease(
 
 #### Plot a time plot ----
 time_plot_awd = dec.create_time_plot(
-    data=awd,
-    start="Jan 2021",
-    end="Dec 2024",
-    disease="AWD",
-    time="M"
+    data=awd, start="Jan 2021", end="Dec 2024", disease="AWD", time="M"
 )
 
 ## No transformation required ##
 
 ### Decompose using LOES ----
-decomposed_awd = STL(
-    awd["admission"],
-    seasonal=7,
-    period = 12,
-    robust=False
-).fit()
+decomposed_awd = STL(awd["admission"], seasonal=7, period=12, robust=False).fit()
 
 ### Plot decomposed components ----
 plt.rcParams["figure.figsize"] = (12, 6.5)
@@ -149,21 +125,14 @@ measles = dec.summarise_disease(
 
 #### Plot a time plot ----
 time_plot_measles = dec.create_time_plot(
-    data=measles,
-    start="Jan 2021",
-    end="Dec 2024",
-    disease="Measles",
-    time="M"
+    data=measles, start="Jan 2021", end="Dec 2024", disease="Measles", time="M"
 )
 
 ## No transformation required ##
 
 ### Decompose using LOES ----
 decomposed_measles = STL(
-    measles["admission"],
-    seasonal=7,
-    period = 12,
-    robust=False
+    measles["admission"], seasonal=7, period=12, robust=False
 ).fit()
 
 ### Plot decomposed components ----
@@ -186,21 +155,14 @@ malaria = dec.summarise_disease(
 
 #### Plot a time plot ----
 time_plot_malaria = dec.create_time_plot(
-    data=malaria,
-    start="Jan 2021",
-    end="Dec 2024",
-    disease="Malaria",
-    time="M"
+    data=malaria, start="Jan 2021", end="Dec 2024", disease="Malaria", time="M"
 )
 
 ## No transformation required ##
 
 ### Decompose using LOES ----
 decomposed_malaria = STL(
-    malaria["admission"],
-    seasonal=7,
-    period = 12,
-    robust=False
+    malaria["admission"], seasonal=7, period=12, robust=False
 ).fit()
 
 ### Plot decomposed components ----
@@ -223,11 +185,7 @@ pneumonia = dec.summarise_disease(
 
 #### Plot a time plot ----
 time_plot_pneumonia = dec.create_time_plot(
-    data=pneumonia,
-    start="Jan 2021",
-    end="Dec 2024",
-    disease="Pneumonia",
-    time="M"
+    data=pneumonia, start="Jan 2021", end="Dec 2024", disease="Pneumonia", time="M"
 )
 
 ## No transformation required ##
@@ -236,10 +194,7 @@ time_plot_pneumonia = dec.create_time_plot(
 
 #### Decompose ----
 decomposed_pneumonia = STL(
-    pneumonia["admission"],
-    seasonal=7,
-    period=12,
-    robust=False
+    pneumonia["admission"], seasonal=7, period=12, robust=False
 ).fit()
 
 
