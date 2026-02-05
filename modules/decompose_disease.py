@@ -162,18 +162,16 @@ def apply_stl_decomposition(
         The scope of the decomposition. Whether a single-area or multiple-area decomposition.
     """
 
-## ---- Helper function to comply with DRY -------------------------------------
+    ## ---- Helper function to comply with DRY -------------------------------------
 
     def decompose_series(series):
         """Decompose a single time series with Box-Cox decision."""
 
         ### Estimate lamba and its 95% confidence intervals ----
-        data["box_coxed"], lmbda, ci = boxcox(
-            x=data[decompose], lmbda=None, alpha=0.05
-        )
+        data["box_coxed"], lmbda, ci = boxcox(x=data[decompose], lmbda=None, alpha=0.05)
 
         ### Decide whether to transform ----
-        ci_contains_1 = (ci[0] <= 1 <= ci[1])
+        ci_contains_1 = ci[0] <= 1 <= ci[1]
 
         if ci_contains_1:
             decomposed = STL(
@@ -202,19 +200,14 @@ def apply_stl_decomposition(
             ### Return trend ----
             return decomposed.trend
 
-
-## ---- Single-area decomposition ----------------------------------------------
-
+    ## ---- Single-area decomposition ----------------------------------------------
 
     if scope == "single":
         return decompose_series(series=data[decompose])
 
-
-## ---- Single-area decomposition ----------------------------------------------
-
+    ## ---- Single-area decomposition ----------------------------------------------
 
     elif scope == "multiple":
-
         if analysis_unit is None:
             raise ValueError("analysis_unit must be provided for multiple-area scope.")
 
