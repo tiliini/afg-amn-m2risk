@@ -3,6 +3,7 @@ import calendar
 from scipy.stats import boxcox
 from scipy.special import inv_boxcox
 from statsmodels.tsa.seasonal import STL
+import numpy as np
 
 # ==============================================================================
 #                     FUNCTION TO CHECK FOR MISSING VALUES
@@ -283,7 +284,17 @@ def apply_stl_decomposition(
             ts = summarise_disease(subset, index, date_format, frequency)
 
             #### Decompose and return ----
-            results[unit] = decompose_series(ts)
+            try:
+                results[unit] = decompose_series(ts)
+            except ValueError:
+                print(
+                    f"""
+                    \nMissing values have been detected in {unit} {analysis_unit.title()}, \nand were handled using univariate ffill imputation
+                    """
+                )
+                ts[decompose] = ts[decompose].replace({0: np.nan})
+                ts[decompose] = ts[decompose].ffill()
+                results[unit] = decompose_series(ts)
 
         return results
 
