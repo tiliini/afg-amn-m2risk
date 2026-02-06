@@ -6,6 +6,7 @@
 ## ---- Load required libraries ------------------------------------------------
 
 
+from os import pipe
 import pandas as pd
 import modules.decompose_disease as dec
 from statsmodels.tsa.seasonal import STL
@@ -26,7 +27,7 @@ ts_diseases = pd.read_excel(
     sheet_name=0,
     index_col=None,
     parse_dates=False,
-    header=0,
+    header=0
 )
 
 ### Rename and exclude non-disease-related values ----
@@ -58,152 +59,197 @@ pneumonia = ts.query("disease == 'New Pneumonia'")
 ## ---- ARI Decomposition ------------------------------------------------------
 
 
-### Make a time-series data ----
-ari = dec.summarise_disease(
-    data=ari, ts_index="time", date_format="%B %Y", time_period="M"
+### Make a time-series object and plot ----
+plot_ari_ts = (
+    ari
+    .pipe(
+        dec.summarise_disease, 
+        ts_index="time", date_format="%B %Y", time_period="M"
+    )
+    .pipe(
+        dec.create_time_plot, 
+        start="Jan 2021", end="Dec 2024", disease="ARI", time="M"
+    )
 )
 
-### Inspect the time series ----
-
-#### Plot a time plot ----
-plot = dec.create_time_plot(
-    data=ari, start="Jan 2021", end="Dec 2024", disease="ARI", time="M"
+### Decompose ---- 
+dec_ari = dec.apply_stl_decomposition(
+    data=ari,
+    decompose="admission",
+    index="time",
+    seasonal=7,
+    period=12,
+    scope="single",
+    date_format="%B %Y",
+    frequency="M",
+    analysis_unit=""
 )
-## No need for box-cox transformatio ##
-
-### Decompose using LOES ----
-decomposed_ari = STL(ari["admission"], seasonal=7, period=12, robust=False).fit()
-
-### Visualise results ----
 
 ### Plot decomposed components ----
 plt.clf()
 plt.rcParams["figure.figsize"] = (12, 6.5)
-decomposed_ari.plot()
+dec_ari.plot()
 
 ### Plot seasonal componet by year ----
-dec.plot_seasonal_subseries(decomposed_ari, disease_name="ARI")
+dec.plot_seasonal_subseries(dec_ari, disease_name="ARI")
 
 
 ## ---- AWD Decomposition ------------------------------------------------------
 
 
-### Make a time-series data ----
-awd = dec.summarise_disease(
-    data=awd, ts_index="time", date_format="%B %Y", time_period="M"
+### Make a time-series object and plot for inspection ----
+plot_awd_ts = (
+    awd
+    .pipe(
+        dec.summarise_disease, 
+        ts_index="time", 
+        date_format="%B %Y", 
+        time_period="M"
+    )
+    .pipe(
+        dec.create_time_plot, 
+        start="Jan 2021", 
+        end="Dec 2024", 
+        disease="ARI", 
+        time="M"
+    )
 )
 
-### Inspect the time series ----
-
-#### Plot a time plot ----
-time_plot_awd = dec.create_time_plot(
-    data=awd, start="Jan 2021", end="Dec 2024", disease="AWD", time="M"
+### Decompose ---- 
+dec_awd = dec.apply_stl_decomposition(
+    data=awd,
+    decompose="admission",
+    index="time",
+    seasonal=7,
+    period=12,
+    scope="single",
+    date_format="%B %Y",
+    frequency="M",
+    analysis_unit=""
 )
-
-## No transformation required ##
-
-### Decompose using LOES ----
-decomposed_awd = STL(awd["admission"], seasonal=7, period=12, robust=False).fit()
 
 ### Plot decomposed components ----
+plt.clf()
 plt.rcParams["figure.figsize"] = (12, 6.5)
-decomposed_awd.plot()
+dec_awd.plot()
 
 ### Plot seasonal componet by year ----
-dec.plot_seasonal_subseries(decomposed_awd, disease_name="AWD")
+dec.plot_seasonal_subseries(dec_awd, disease_name="AWD")
 
 
 ## ---- Measles Decomposition --------------------------------------------------
 
 
-### Make a time-series data ----
-measles = dec.summarise_disease(
-    data=measles, ts_index="time", date_format="%B %Y", time_period="M"
+### Make a time-series object and plot for inspection ----
+plot_measles_ts = (
+    measles
+    .pipe(
+        dec.summarise_disease,
+        ts_index="time", date_format="%B %Y", time_period="M"
+    )
+    .pipe(
+        dec.create_time_plot,
+        start="Jan 2021", end="Dec 2024", disease="ARI", time="M"
+    )
 )
 
-### Inspect the time series ----
-
-#### Plot a time plot ----
-time_plot_measles = dec.create_time_plot(
-    data=measles, start="Jan 2021", end="Dec 2024", disease="Measles", time="M"
+### Decompose ---- 
+dec_measles = dec.apply_stl_decomposition(
+    data=measles,
+    decompose="admission",
+    index="time",
+    seasonal=7,
+    period=12,
+    scope="single",
+    date_format="%B %Y",
+    frequency="M",
+    analysis_unit=""
 )
-
-## No transformation required ##
-
-### Decompose using LOES ----
-decomposed_measles = STL(
-    measles["admission"], seasonal=7, period=12, robust=False
-).fit()
 
 ### Plot decomposed components ----
+plt.clf()
 plt.rcParams["figure.figsize"] = (12, 6.5)
-decomposed_measles.plot()
+dec_measles.plot()
 
 ### Plot seasonal componet by year ----
-dec.plot_seasonal_subseries(decomposed_measles, disease_name="Measles")
+dec.plot_seasonal_subseries(dec_measles, disease_name="Measles")
 
 
-## ---- Measles Decomposition --------------------------------------------------
+## ---- Malaria Decomposition --------------------------------------------------
 
 
-### Make a time-series data ----
-malaria = dec.summarise_disease(
-    data=malaria, ts_index="time", date_format="%B %Y", time_period="M"
+### Make a time-series object and plot for inspection ----
+plot_malaria_ts = (
+    malaria
+    .pipe(
+        dec.summarise_disease,
+        ts_index="time", date_format="%B %Y", time_period="M"
+    )
+    .pipe(
+        dec.create_time_plot,
+        start="Jan 2021", end="Dec 2024", disease="Malaria", time="M"
+    )
 )
 
-### Inspect the time series ----
-
-#### Plot a time plot ----
-time_plot_malaria = dec.create_time_plot(
-    data=malaria, start="Jan 2021", end="Dec 2024", disease="Malaria", time="M"
+### Decompose ---- 
+dec_malaria = dec.apply_stl_decomposition(
+    data=malaria,
+    decompose="admission",
+    index="time",
+    seasonal=7,
+    period=12,
+    scope="single",
+    date_format="%B %Y",
+    frequency="M",
+    analysis_unit=""
 )
-
-## No transformation required ##
-
-### Decompose using LOES ----
-decomposed_malaria = STL(
-    malaria["admission"], seasonal=7, period=12, robust=False
-).fit()
 
 ### Plot decomposed components ----
+plt.clf()
 plt.rcParams["figure.figsize"] = (12, 6.5)
-decomposed_malaria.plot()
+dec_malaria.plot()
 
 ### Plot seasonal componet by year ----
-dec.plot_seasonal_subseries(decomposed_malaria, disease_name="Malaria")
+dec.plot_seasonal_subseries(dec_malaria, disease_name="Malaria")
 
 
-## ---- Measles Decomposition --------------------------------------------------
+## ---- Pneumonia Decomposition ------------------------------------------------
 
 
-### Make a time-series data ----
-pneumonia = dec.summarise_disease(
-    data=pneumonia, ts_index="time", date_format="%B %Y", time_period="M"
+### Make a time-series object and plot for inspection ----
+plot_pneummonia_ts = (
+    pneumonia
+    .pipe(
+        dec.summarise_disease,
+        ts_index="time", date_format="%B %Y", time_period="M"
+    )
+    .pipe(
+        dec.create_time_plot,
+        start="Jan 2021", end="Dec 2024", disease="Pneumonia", time="M"
+    )
 )
 
-### Inspect the time series ----
-
-#### Plot a time plot ----
-time_plot_pneumonia = dec.create_time_plot(
-    data=pneumonia, start="Jan 2021", end="Dec 2024", disease="Pneumonia", time="M"
+### Decompose ---- 
+dec_pneumonia = dec.apply_stl_decomposition(
+    data=ari,
+    decompose="admission",
+    index="time",
+    seasonal=7,
+    period=12,
+    scope="single",
+    date_format="%B %Y",
+    frequency="M",
+    analysis_unit=""
 )
-
-## No transformation required ##
-
-### Decompose using LOES ----
-
-#### Decompose ----
-decomposed_pneumonia = STL(
-    pneumonia["admission"], seasonal=7, period=12, robust=False
-).fit()
 
 
 ### Plot decomposed components ----
+plt.clf()
 plt.rcParams["figure.figsize"] = (12, 6.5)
-decomposed_pneumonia.plot()
+dec_pneumonia.plot()
 
 ### Plot seasonal componet by year ----
-dec.plot_seasonal_subseries(decomposed_pneumonia, disease_name="Pneumonia")
+dec.plot_seasonal_subseries(dec_pneumonia, disease_name="Pneumonia")
 
 
 # ============================== End of Workflow ===============================
