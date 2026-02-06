@@ -238,7 +238,7 @@ def apply_stl_decomposition(
             raise ValueError("analysis_unit must be provided for multiple-area scope.")
 
         ### List of unique analysis units ----
-        units = data.analysis_unit.unique()
+        units = data[analysis_unit].unique()
 
         ### Initialise results container ----
         results = {}
@@ -248,8 +248,8 @@ def apply_stl_decomposition(
             subset = data.query(f"{analysis_unit} == @unit")
 
             #### Summarise data and make a time-series object ----
-            ts = summarise_disease(subset, subset[index], date_format, frequency)
-
+            ts = summarise_disease(subset, index, date_format, frequency)
+            
             #### Decompose and return ----
             results[unit] = decompose_series(ts)
 
