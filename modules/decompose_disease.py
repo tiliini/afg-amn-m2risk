@@ -154,10 +154,13 @@ def plot_seasonal_subseries(decomposed, disease_name=""):
 def apply_stl_decomposition(
     data,
     decompose,
+    index,
     seasonal,
     period,
     scope="single",
-    analysis_unit="",
+    date_format="%B %Y", 
+    frequency="M",
+    analysis_unit=""
 ):
     """
     Apply STL decomposition dynamically
@@ -176,23 +179,24 @@ def apply_stl_decomposition(
         Periodicity of the sequence of the phenomenon to be decomposed.
 
     scope: str
-        The scope of the decomposition. Whether a single-area or multiple-area decomposition.
+        The scope of the decomposition. Whether a single-area or multiple-area 
+        decomposition.
     """
 
-    ## ---- Helper function to comply with DRY -------------------------------------
+    ## ---- Helper function to comply with DRY ---------------------------------
 
     def decompose_series(series):
         """Decompose a single time series with Box-Cox decision."""
 
         ### Estimate lamba and its 95% confidence intervals ----
-        data["box_coxed"], lmbda, ci = boxcox(x=data[decompose], lmbda=None, alpha=0.05)
+        series["box_coxed"], lmbda, ci = boxcox(x=series[decompose], lmbda=None, alpha=0.05)
 
         ### Decide whether to transform ----
         ci_contains_1 = ci[0] <= 1 <= ci[1]
 
         if ci_contains_1:
             decomposed = STL(
-                data[decompose], seasonal=seasonal, period=period, robust=False
+                series[decompose], seasonal=seasonal, period=period, robust=False
             ).fit()
 
             ### Return trend ----
@@ -201,7 +205,7 @@ def apply_stl_decomposition(
         else:
             ### Decompose Box-Cox-transformed data ----
             decomposed = STL(
-                data.box_coxed, seasonal=seasonal, period=period, robust=False
+                series.box_coxed, seasonal=seasonal, period=period, robust=False
             ).fit()
 
             ### Reverse transformation to original scale ----
@@ -220,7 +224,12 @@ def apply_stl_decomposition(
     ## ---- Single-area decomposition ------------------------------------------
 
     if scope == "single":
-        return decompose_series(series=data[decompose])
+
+        ### Summarise data and make a time-series object ----
+        ts = summarise_disease(data, index, date_format, frequency)
+
+        ### Decompose and return ----
+        return decompose_series(ts)
 
     ## ---- Single-area decomposition ------------------------------------------
 
@@ -237,7 +246,12 @@ def apply_stl_decomposition(
         ### Loop over ----
         for unit in units:
             subset = data.query(f"{analysis_unit} == @unit")
-            results[unit] = decompose_series(subset[decompose])
+
+            #### Summarise data and make a time-series object ----
+            ts = summarise_disease(subset, subset[index], date_format, frequency)
+
+            #### Decompose and return ----
+            results[unit] = decompose_series(ts)
 
         return results
 
