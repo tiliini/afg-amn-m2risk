@@ -200,7 +200,7 @@ def apply_stl_decomposition(
             ).fit()
 
             ### Return trend ----
-            return decomposed.trend
+            return decomposed
 
         else:
             ### Decompose Box-Cox-transformed data ----
@@ -219,7 +219,7 @@ def apply_stl_decomposition(
             )
 
             ### Return trend ----
-            return decomposed.trend
+            return decomposed
 
     ## ---- Single-area decomposition ------------------------------------------
 
@@ -249,7 +249,7 @@ def apply_stl_decomposition(
 
             #### Summarise data and make a time-series object ----
             ts = summarise_disease(subset, index, date_format, frequency)
-            
+
             #### Decompose and return ----
             results[unit] = decompose_series(ts)
 
