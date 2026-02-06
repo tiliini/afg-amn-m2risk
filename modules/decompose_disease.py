@@ -4,6 +4,38 @@ from scipy.stats import boxcox
 from scipy.special import inv_boxcox
 from statsmodels.tsa.seasonal import STL
 
+# ==============================================================================
+#                     FUNCTION TO CHECK FOR MISSING VALUES
+# ==============================================================================
+
+def check_missing_values(data):
+    """
+    Check whether input data contains missing values.
+
+    Parameters
+
+    ----------
+    data : A non-wrangled data object.
+
+    Returns 
+    A summary table if missing values exist.
+    """
+
+    ## Check if there are missing values ----
+    x = data.isnull().values.any()
+
+    if x:
+        return data.isnull().sum()
+    else:
+        print(
+            """
+            No missing values found in the data. Notice that method used 
+            herein checked if there are 'NAN', 'NAT'. If missing values values
+            are represented in any other form in your data, then these were not
+            dected.
+            """
+        )
+
 
 # ==============================================================================
 #           FUNCTION SUMMARISE ADMISSIONS AND MAKE A TIME-SERIES OBJECT
