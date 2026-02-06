@@ -5,8 +5,6 @@
 
 ## ---- Load required libraries ------------------------------------------------
 
-
-from os import pipe
 import pandas as pd
 import modules.decompose_disease as dec
 from statsmodels.tsa.seasonal import STL
@@ -110,7 +108,7 @@ plot_awd_ts = (
         dec.create_time_plot, 
         start="Jan 2021", 
         end="Dec 2024", 
-        disease="ARI", 
+        disease="AWD", 
         time="M"
     )
 )
