@@ -36,6 +36,9 @@ ts = (
     .query("disease != 'HMIS-MIAR-OPD- New Patients/Clients'")
 )
 
+### Filter out year 2025 from the data ----
+ts.query("~`time`.str.contains('2025')", inplace=True)
+
 ### Recode diseases for easy manipulation ----
 ts["disease"] = ts["disease"].replace(
     {
@@ -53,7 +56,6 @@ awd = ts.query("disease == 'AWD'")
 measles = ts.query("disease == 'Measles'")
 malaria = ts.query("disease == 'Malaria'")
 pneumonia = ts.query("disease == 'New Pneumonia'")
-
 
 ## ---- ARI Decomposition ------------------------------------------------------
 
