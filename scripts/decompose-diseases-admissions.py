@@ -5,7 +5,6 @@
 
 ## ---- Load required libraries ------------------------------------------------
 
-from numba.cuda import local
 import pandas as pd
 import modules.decompose_disease as dec
 import importlib
@@ -72,8 +71,8 @@ for province in provinces:
         x = subset_disease.isnull().values.any()
 
         if x:
-         p = subset_disease.bfill()
-         dfs.append(p)
+            p = subset_disease.bfill()
+            dfs.append(p)
         else:
             dfs.append(subset_disease)
 
