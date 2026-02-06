@@ -76,7 +76,7 @@ def summarise_disease(data, ts_index, date_format="%B %Y", time_period="M"):
     )
 
     ts.index = ts.index.to_timestamp()
-    ts
+
     return ts
 
 
