@@ -78,13 +78,12 @@ for province in provinces:
             dfs.append(subset_disease)
 
 # Combine everything into one long DataFrame
-ts2 = pd.concat(dfs, ignore_index=True)
+ts = pd.concat(dfs, ignore_index=True)
 
 ### Split disease-specific time seris ----
 ari = ts.query("disease == 'ARI'")
 awd = ts.query("disease == 'AWD'")
 measles = ts.query("disease == 'Measles'")
-malaria = ts.query("disease == 'Malaria'")
 pneumonia = ts.query("disease == 'New Pneumonia'")
 
 
@@ -205,44 +204,6 @@ dec_measles.plot()
 
 ### Plot seasonal componet by year ----
 dec.plot_seasonal_subseries(dec_measles, disease_name="Measles")
-
-
-## ---- Malaria Decomposition --------------------------------------------------
-
-
-### Make a time-series object and plot for inspection ----
-plot_malaria_ts = (
-    malaria
-    .pipe(
-        dec.summarise_disease,
-        ts_index="time", date_format="%B %Y", time_period="M"
-    )
-    .pipe(
-        dec.create_time_plot,
-        start="Jan 2021", end="Dec 2024", disease="Malaria", time="M"
-    )
-)
-
-### Decompose ---- 
-dec_malaria = dec.apply_stl_decomposition(
-    data=malaria,
-    decompose="admission",
-    index="time",
-    seasonal=7,
-    period=12,
-    scope="single",
-    date_format="%B %Y",
-    frequency="M",
-    analysis_unit=""
-)
-
-### Plot decomposed components ----
-plt.clf()
-plt.rcParams["figure.figsize"] = (12, 6.5)
-dec_malaria.plot()
-
-### Plot seasonal componet by year ----
-dec.plot_seasonal_subseries(dec_malaria, disease_name="Malaria")
 
 
 ## ---- Pneumonia Decomposition ------------------------------------------------
