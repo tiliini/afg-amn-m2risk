@@ -57,6 +57,7 @@ measles = ts.query("disease == 'Measles'")
 malaria = ts.query("disease == 'Malaria'")
 pneumonia = ts.query("disease == 'New Pneumonia'")
 
+
 ## ---- ARI Decomposition ------------------------------------------------------
 
 

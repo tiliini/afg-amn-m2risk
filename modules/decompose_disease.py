@@ -69,7 +69,6 @@ def summarise_disease(data, ts_index, date_format="%B %Y", time_period="M"):
                 time_period
             )
         )
-        .query("time.dt.year != 2025")
         .groupby([ts_index], as_index=False)
         .agg({"admission": "sum"})
         .set_index([ts_index])
