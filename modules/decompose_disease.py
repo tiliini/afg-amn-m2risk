@@ -3,6 +3,39 @@ import calendar
 from scipy.stats import boxcox
 from scipy.special import inv_boxcox
 from statsmodels.tsa.seasonal import STL
+import numpy as np
+
+# ==============================================================================
+#                     FUNCTION TO CHECK FOR MISSING VALUES
+# ==============================================================================
+
+def check_missing_values(data):
+    """
+    Check whether input data contains missing values.
+
+    Parameters
+
+    ----------
+    data : A non-wrangled data object.
+
+    Returns 
+    A summary table if missing values exist.
+    """
+
+    ## Check if there are missing values ----
+    x = data.isnull().values.any()
+
+    if x:
+        return data.isnull().sum()
+    else:
+        print(
+            """
+            No missing values found in the data. Notice that method used 
+            herein checked if there are 'NAN', 'NAT'. If missing values values
+            are represented in any other form in your data, then these were not
+            dected.
+            """
+        )
 
 
 # ==============================================================================
@@ -36,7 +69,6 @@ def summarise_disease(data, ts_index, date_format="%B %Y", time_period="M"):
                 time_period
             )
         )
-        .query("time.dt.year != 2025")
         .groupby([ts_index], as_index=False)
         .agg({"admission": "sum"})
         .set_index([ts_index])
@@ -44,7 +76,7 @@ def summarise_disease(data, ts_index, date_format="%B %Y", time_period="M"):
     )
 
     ts.index = ts.index.to_timestamp()
-    ts
+
     return ts
 
 
@@ -251,7 +283,17 @@ def apply_stl_decomposition(
             ts = summarise_disease(subset, index, date_format, frequency)
 
             #### Decompose and return ----
-            results[unit] = decompose_series(ts)
+            try:
+                results[unit] = decompose_series(ts)
+            except ValueError:
+                print(
+                    f"""
+                    \nMissing values have been detected in {unit} {analysis_unit.title()}, \nand were handled using univariate ffill imputation
+                    """
+                )
+                ts[decompose] = ts[decompose].replace({0: np.nan})
+                ts[decompose] = ts[decompose].ffill()
+                results[unit] = decompose_series(ts)
 
         return results
 
