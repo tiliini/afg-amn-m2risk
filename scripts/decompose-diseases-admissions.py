@@ -5,6 +5,7 @@
 
 ## ---- Load required libraries ------------------------------------------------
 
+from numba.cuda import local
 import pandas as pd
 import modules.decompose_disease as dec
 import importlib
@@ -58,8 +59,8 @@ ts.query("`disease` != 'Malaria'", inplace=True)
 ### Check for missing values ----
 dec.check_missing_values(ts)
 
-### Apply univariate imputation for missing values ----
-df = []
+### Apply univariate NOCB imputation for missing values ----
+dfs = []
 provinces = ts.province.unique()
 
 for province in provinces:
@@ -71,12 +72,13 @@ for province in provinces:
         x = subset_disease.isnull().values.any()
 
         if x:
-         p = subset_disease.ffill()
-         df.append(p)
+         p = subset_disease.bfill()
+         dfs.append(p)
         else:
-            df.append(subset_disease)
-        
+            dfs.append(subset_disease)
 
+# Combine everything into one long DataFrame
+ts2 = pd.concat(dfs, ignore_index=True)
 
 ### Split disease-specific time seris ----
 ari = ts.query("disease == 'ARI'")
