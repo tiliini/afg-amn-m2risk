@@ -78,6 +78,7 @@ for province in provinces:
 
 # Combine everything into one long DataFrame
 ts = pd.concat(dfs, ignore_index=True)
+del [dfs, x, disease, provinces, diseases, subset, subset_disease, p, province]
 
 ### Split disease-specific time seris ----
 ari = ts.query("disease == 'ARI'")
@@ -109,10 +110,10 @@ dec_ari = dec.apply_stl_decomposition(
     index="time",
     seasonal=7,
     period=12,
-    scope="single",
+    scope="multiple",
     date_format="%B %Y",
     frequency="M",
-    analysis_unit=""
+    analysis_unit="province"
 )
 
 ### Plot decomposed components ----
