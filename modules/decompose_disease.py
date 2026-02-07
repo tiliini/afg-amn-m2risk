@@ -299,3 +299,51 @@ def apply_stl_decomposition(
 
     else:
         raise ValueError("scope must be 'single' or 'multiple'")
+
+
+# ==============================================================================
+#            FUNCTION TO PULL COMPONENTS OUT OF A DICT AND CONCATENATE
+# ==============================================================================
+
+
+def pull_component_and_concatenate(dct, component):
+    
+    """
+    Pull out components stored in a Province-wise dictionary returned by 
+    `apply_stl_decomposition()`. 
+
+    Parameters
+
+    ----------
+    dct: Dictionary object returned by `apply_stl_decomposition()`.
+
+    component: str
+    The component that should be pulled out of the dictionary and concatenated 
+    in a tidy manner in the end DataFrame for later use.
+
+    Returns 
+    A long DataFrame with the index, analysis units and the user-specified 
+    component.
+
+    """
+
+    ## Initialise an empyt container for dfs ----
+    dfs = []
+
+    ## Loop over a decomposed object ----
+    for province, stl_obj in dct.items():
+
+        ### Extract a user-defined component ----
+        series = getattr(stl_obj, component)
+
+        ### Convert to DataFrame and add province label ----
+        df = pd.DataFrame({
+            "province": province,
+            component: series
+        })
+
+        ### Append df ----
+        dfs.append(df)
+
+    ## Concatenate all provinces into one long DataFrame ----
+    return pd.concat(dfs, ignore_index=False)
