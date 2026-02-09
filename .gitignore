@@ -7,3 +7,4 @@
 data-raw/
 
 # Pycache
+modules/__pycache__/
