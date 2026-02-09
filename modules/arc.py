@@ -1,7 +1,7 @@
-def estimate_arc(ts, start="", end=""):
+def estimate_arc(ts, months):
 
     """
-    Calculate Seasonal Average Rate of Change
+    Estimate ARC for a seasonal window defined by a set of months.
     
     The ARC (Average Rate of Change) quantifies the typical rate of change over
     a specified time interval. It is calculated from the trend line and 
@@ -14,39 +14,31 @@ def estimate_arc(ts, start="", end=""):
     Parameters
 
     ----------
-    ts : A decomposed time-series object with trend component.
-
-    start : str
-    Date a the biginning of the seasonal slope given as follows: '2021-02'.
-
-    end : str
-    Date a the end of the seasonal slope.
-
-    Returns 
-    A dictionary containing the ARC, slope-initial value, slope-end value and the 
-    time interval.
+    ts : DataFrame with a 'trend' column and DatetimeIndex
+    months : list of integers (1–12) defining the seasonal window
+    
+    Returns
+    -------
+    dict with ARC, initial value, end value, and time interval
 
     """
 
-    ## Slice seasonal-based slope ----
-    seasonal_trend = ts.trend[start:end]
+  # Slice all months matching the seasonal window (across all years)
+    seasonal_trend = ts["trend"][ts.index.month.isin(months)]
 
-    ## Pull value at beginning and end of the slope ----
+    # Pull start and end values
     init_value = seasonal_trend.iloc[0]
-    end_value = seasonal_trend.iloc[len(seasonal_trend)-1]
+    end_value  = seasonal_trend.iloc[-1]
 
-    ## Estimate time interval of the slope ----
+    # Time interval (number of months)
     time_interval = len(seasonal_trend)
 
-    ## Calculate ARC ----
+    # ARC calculation
     arc = (end_value - init_value) / time_interval
 
-    results = {
+    return {
         "arc": arc,
         "initial_value": init_value,
         "end_value": end_value,
         "time_interval": time_interval
     }
-
-    return results
-
