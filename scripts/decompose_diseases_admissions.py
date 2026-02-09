@@ -110,10 +110,10 @@ dec_ari = dec.apply_stl_decomposition(
     index="time",
     seasonal=7,
     period=12,
-    scope="multiple",
+    scope="single",
     date_format="%B %Y",
     frequency="M",
-    analysis_unit="province"
+    analysis_unit=""
 )
 
 ### Plot decomposed components ----
