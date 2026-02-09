@@ -5,16 +5,19 @@
 
 ## ---- Load required libraries ------------------------------------------------
 
-import pandas as pd
-import modules.decompose_disease as dec
+
 import importlib
-from statsmodels.tsa.seasonal import STL
+import pandas as pd
+from modules import seasonality as snl
+from modules import utils
 import sys
 
 sys.path.append("python")
 import matplotlib.pyplot as plt
 
 plt.style.use("ggplot")
+importlib.reload(utils)
+
 
 
 ## ---- Wrangle ----------------------------------------------------------------
@@ -50,13 +53,13 @@ ts["disease"] = ts["disease"].replace(
 
 
 ### Check for missing values ----
-dec.check_missing_values(ts)
+utils.check_missing_values(ts)
 
 ### Exclude malaria for many missing values across months and years ----
 ts.query("`disease` != 'Malaria'", inplace=True)
 
 ### Check for missing values ----
-dec.check_missing_values(ts)
+utils.check_missing_values(ts)
 
 ### Apply univariate NOCB imputation for missing values ----
 dfs = []
@@ -94,17 +97,17 @@ pneumonia = ts.query("disease == 'New Pneumonia'")
 plot_ari_ts = (
     ari
     .pipe(
-        dec.summarise_disease, 
+        utils.summarise_disease, 
         ts_index="time", date_format="%B %Y", time_period="M"
     )
     .pipe(
-        dec.create_time_plot, 
+        utils.create_time_plot, 
         start="Jan 2021", end="Dec 2024", disease="ARI", time="M"
     )
 )
 
 ### Decompose ---- 
-dec_ari = dec.apply_stl_decomposition(
+dec_ari = utils.apply_stl_decomposition(
     data=ari,
     decompose="admission",
     index="time",
@@ -122,7 +125,7 @@ plt.rcParams["figure.figsize"] = (12, 6.5)
 dec_ari.plot()
 
 ### Plot seasonal componet by year ----
-dec.plot_seasonal_subseries(dec_ari, disease_name="ARI")
+snl.plot_seasonal_subseries(dec_ari, disease_name="ARI")
 
 
 ## ---- AWD Decomposition ------------------------------------------------------
@@ -132,13 +135,13 @@ dec.plot_seasonal_subseries(dec_ari, disease_name="ARI")
 plot_awd_ts = (
     awd
     .pipe(
-        dec.summarise_disease, 
+        utils.summarise_disease, 
         ts_index="time", 
         date_format="%B %Y", 
         time_period="M"
     )
     .pipe(
-        dec.create_time_plot, 
+        utils.create_time_plot, 
         start="Jan 2021", 
         end="Dec 2024", 
         disease="AWD", 
@@ -147,7 +150,7 @@ plot_awd_ts = (
 )
 
 ### Decompose ---- 
-dec_awd = dec.apply_stl_decomposition(
+dec_awd = utils.apply_stl_decomposition(
     data=awd,
     decompose="admission",
     index="time",
@@ -165,7 +168,7 @@ plt.rcParams["figure.figsize"] = (12, 6.5)
 dec_awd.plot()
 
 ### Plot seasonal componet by year ----
-dec.plot_seasonal_subseries(dec_awd, disease_name="AWD")
+snl.plot_seasonal_subseries(dec_awd, disease_name="AWD")
 
 
 ## ---- Measles Decomposition --------------------------------------------------
@@ -175,17 +178,17 @@ dec.plot_seasonal_subseries(dec_awd, disease_name="AWD")
 plot_measles_ts = (
     measles
     .pipe(
-        dec.summarise_disease,
+        utils.summarise_disease,
         ts_index="time", date_format="%B %Y", time_period="M"
     )
     .pipe(
-        dec.create_time_plot,
+        utils.create_time_plot,
         start="Jan 2021", end="Dec 2024", disease="ARI", time="M"
     )
 )
 
 ### Decompose ---- 
-dec_measles = dec.apply_stl_decomposition(
+dec_measles = utils.apply_stl_decomposition(
     data=measles,
     decompose="admission",
     index="time",
@@ -203,7 +206,7 @@ plt.rcParams["figure.figsize"] = (12, 6.5)
 dec_measles.plot()
 
 ### Plot seasonal componet by year ----
-dec.plot_seasonal_subseries(dec_measles, disease_name="Measles")
+snl.plot_seasonal_subseries(dec_measles, disease_name="Measles")
 
 
 ## ---- Pneumonia Decomposition ------------------------------------------------
@@ -213,17 +216,17 @@ dec.plot_seasonal_subseries(dec_measles, disease_name="Measles")
 plot_pneummonia_ts = (
     pneumonia
     .pipe(
-        dec.summarise_disease,
+        utils.summarise_disease,
         ts_index="time", date_format="%B %Y", time_period="M"
     )
     .pipe(
-        dec.create_time_plot,
+        utils.create_time_plot,
         start="Jan 2021", end="Dec 2024", disease="Pneumonia", time="M"
     )
 )
 
 ### Decompose ---- 
-dec_pneumonia = dec.apply_stl_decomposition(
+dec_pneumonia = utils.apply_stl_decomposition(
     data=ari,
     decompose="admission",
     index="time",
@@ -242,7 +245,7 @@ plt.rcParams["figure.figsize"] = (12, 6.5)
 dec_pneumonia.plot()
 
 ### Plot seasonal componet by year ----
-dec.plot_seasonal_subseries(dec_pneumonia, disease_name="Pneumonia")
+snl.plot_seasonal_subseries(dec_pneumonia, disease_name="Pneumonia")
 
 
 # ============================== End of Workflow ===============================
