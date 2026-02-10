@@ -120,3 +120,23 @@ def estimate_arc(ts, months):
         "end_value": end_value,
         "time_interval": n_months
     }
+
+
+# ==============================================================================
+#            FUNCTION TO TAKE THE ABSOLUTE VALUE OF ARC
+# ==============================================================================
+
+
+def get_absolute_and_median(data, groupby=""): 
+    
+    data["abs_arc"] = data["arc"].abs()
+
+    data = (
+        data
+        .groupby(groupby)["abs_arc"]
+        .median()
+        .round()
+        .reset_index(name="median_arc_abs")
+    )
+
+    return data
