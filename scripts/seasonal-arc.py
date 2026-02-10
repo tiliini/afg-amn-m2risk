@@ -101,6 +101,10 @@ for (province, year, season, slope), group in groups:
 
 arc_ari = pd.DataFrame(results)
 
+### Median ARC ----
+med_arc_ari = trend.get_absolute_and_median(
+    arc_ari, ["province", "season", "slope"]
+)
 
 ## ---- AWD  -------------------------------------------------------------------
 
@@ -185,6 +189,10 @@ for (province, year, season, slope), group in groups:
 
 arc_awd = pd.DataFrame(results)
 
+### Median ARC ----
+med_arc_awd = trend.get_absolute_and_median(
+    arc_awd, ["province", "season", "slope"]
+)
 
 ## ---- Measles ----------------------------------------------------------------
 
@@ -266,6 +274,10 @@ for (province, year, season, slope), group in groups:
 
 arc_measles = pd.DataFrame(results)
 
+### Median ARC ----
+med_arc_measles = trend.get_absolute_and_median(
+    arc_measles, ["province", "season", "slope"]
+)
 
 ## ---- Pneumonia --------------------------------------------------------------
 
@@ -345,3 +357,7 @@ for (province, year, season, slope), group in groups:
 
 arc_pneumonia = pd.DataFrame(results)
 
+### Median ARC ----
+med_arc_pneumonia = trend.get_absolute_and_median(
+    arc_pneumonia, ["province", "season", "slope"]
+)
