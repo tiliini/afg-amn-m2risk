@@ -41,19 +41,19 @@ dec_ari_province = utils.apply_stl_decomposition(
 ### Pull out trend ----
 ari_trend = utils.pull_component_and_concatenate(dec_ari_province, "trend")
 
-## Prepara data ----
+### Prepara data ----
 ari_trend = (
     ari_trend
     .assign(
         year=ari_trend.index.year,
         month=ari_trend.index.month,
         season=lambda s: np.where(
-            s.index.month.isin([8, 9, 10, 11, 12, 2, 3]), "High", "Low"
+            s.index.month.isin([8, 9, 10, 11, 12, 1, 2, 3]), "High", "Low"
         ),
     )
 )
 
-# Now assign slope WITHIN season
+### Now assign slope WITHIN season ----
 ari_trend["slope"] = np.where(
     ari_trend["season"] == "Low",
     "Low",   # force Low season to always be Low slope
@@ -67,14 +67,14 @@ ari_trend["slope"] = np.where(
     )
 )
 
-## Define Seasonal Windows ----
+### Define Seasonal Windows ----
 high_windows = {
     "Increase": [8, 9, 10, 11, 12],
     "Decrease": [1, 2, 3],
     "Low":      []   # no Low-slope months in High season
 }
 low_windows = {
-    "Low": [4, 5, 6, 7, 1]   # all Low-season months
+    "Low": [4, 5, 6, 7]   # all Low-season months
 }
 
 season_slope_months = {
