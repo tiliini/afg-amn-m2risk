@@ -136,7 +136,7 @@ def get_absolute_and_median(data, groupby=""):
         .groupby(groupby)["abs_arc"]
         .median()
         .round()
-        .reset_index(name="median_arc_abs")
+        .reset_index(name="season_slope_magnitude")
     )
 
     return data
