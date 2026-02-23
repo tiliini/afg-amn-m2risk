@@ -106,6 +106,7 @@ med_arc_ari = trend.get_absolute_and_median(
     arc_ari, ["province", "season", "slope"]
 )
 
+
 ## ---- AWD  -------------------------------------------------------------------
 
 
@@ -194,6 +195,7 @@ med_arc_awd = trend.get_absolute_and_median(
     arc_awd, ["province", "season", "slope"]
 )
 
+
 ## ---- Measles ----------------------------------------------------------------
 
 
@@ -279,6 +281,7 @@ med_arc_measles = trend.get_absolute_and_median(
     arc_measles, ["province", "season", "slope"]
 )
 
+
 ## ---- Pneumonia --------------------------------------------------------------
 
 
@@ -361,3 +364,6 @@ arc_pneumonia = pd.DataFrame(results)
 med_arc_pneumonia = trend.get_absolute_and_median(
     arc_pneumonia, ["province", "season", "slope"]
 )
+
+
+# ============================== End of Workflow ===============================

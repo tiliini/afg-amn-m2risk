@@ -96,14 +96,8 @@ pneumonia = ts.query("disease == 'New Pneumonia'")
 ### Make a time-series object and plot ----
 plot_ari_ts = (
     ari
-    .pipe(
-        utils.summarise_disease, 
-        ts_index="time", date_format="%B %Y", time_period="M"
-    )
-    .pipe(
-        utils.create_time_plot, 
-        start="Jan 2021", end="Dec 2024", disease="ARI", time="M"
-    )
+    .pipe(utils.summarise_disease, "time", "%B %Y", "M")
+    .pipe(utils.create_time_plot, "Jan 2021", "Dec 2024", "ARI", "M")
 )
 
 ### Decompose ---- 
@@ -134,19 +128,8 @@ snl.plot_seasonal_subseries(dec_ari, disease_name="ARI")
 ### Make a time-series object and plot for inspection ----
 plot_awd_ts = (
     awd
-    .pipe(
-        utils.summarise_disease, 
-        ts_index="time", 
-        date_format="%B %Y", 
-        time_period="M"
-    )
-    .pipe(
-        utils.create_time_plot, 
-        start="Jan 2021", 
-        end="Dec 2024", 
-        disease="AWD", 
-        time="M"
-    )
+    .pipe(utils.summarise_disease, "time", "%B %Y", "M")
+    .pipe(utils.create_time_plot, "Jan 2021", "Dec 2024", "AWD", "M")
 )
 
 ### Decompose ---- 
@@ -177,14 +160,8 @@ snl.plot_seasonal_subseries(dec_awd, disease_name="AWD")
 ### Make a time-series object and plot for inspection ----
 plot_measles_ts = (
     measles
-    .pipe(
-        utils.summarise_disease,
-        ts_index="time", date_format="%B %Y", time_period="M"
-    )
-    .pipe(
-        utils.create_time_plot,
-        start="Jan 2021", end="Dec 2024", disease="ARI", time="M"
-    )
+    .pipe(utils.summarise_disease, "time", "%B %Y", "M")
+    .pipe(utils.create_time_plot, "Jan 2021", "Dec 2024", "ARI", "M")
 )
 
 ### Decompose ---- 
@@ -215,14 +192,8 @@ snl.plot_seasonal_subseries(dec_measles, disease_name="Measles")
 ### Make a time-series object and plot for inspection ----
 plot_pneummonia_ts = (
     pneumonia
-    .pipe(
-        utils.summarise_disease,
-        ts_index="time", date_format="%B %Y", time_period="M"
-    )
-    .pipe(
-        utils.create_time_plot,
-        start="Jan 2021", end="Dec 2024", disease="Pneumonia", time="M"
-    )
+    .pipe(utils.summarise_disease, "time", "%B %Y", "M")
+    .pipe(utils.create_time_plot, "Jan 2021", "Dec 2024", "Pneumonia", "M")
 )
 
 ### Decompose ---- 
