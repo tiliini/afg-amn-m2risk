@@ -63,7 +63,7 @@ def plot_trend_subseries(decomposed, disease_name=""):
 
 
 # ==============================================================================
-#                       FUNCTION TO ESTIMATE ARC
+#                FUNCTION TO ESTIMATE SEASONAL-SLOPE-SPECIFIC ARC
 # ==============================================================================
 
 
@@ -122,12 +122,76 @@ def estimate_arc(ts, months):
     }
 
 
+
+# ==============================================================================
+#                       FUNCTION TO ESTIMATE LOCAL ARC
+# ==============================================================================
+
+
+
+def estimate_local_arc(ts, analysis_unit):
+
+    """
+    Estimate local average rate of change (LARC)
+
+    LARC is the month-to-month magnitude of change of a given variable. It is 
+    the difference between a given-month value and its past-month value.
+
+    Parameters
+
+    ----------
+    ts : DataFrame with a 'trend' column and DatetimeIndex
+
+    analysis_unit : str
+        Individual analysis units in the data.
+
+
+    Returns 
+
+    ---------
+    A pandas Data Frame with a new column "larc" containing the local (month-to-
+    month) average rate of change.
+    """
+    
+    ## Initiate an empty results container ----
+    larc = []
+
+    ## List of unique analysis units ----
+    analysis_units = ts[analysis_unit].unique()
+
+    ## Loop over and perform operations ----
+    for i in analysis_units:
+        unit = ts.query(f"{analysis_unit} == @i")
+
+        x = unit.trend.diff()
+
+        larc.append(x)
+
+    ## Concatenate all provinces into one long DataFrame ----
+    return pd.concat(larc, ignore_index=False)
+
+
+
 # ==============================================================================
 #            FUNCTION TO TAKE THE ABSOLUTE VALUE OF ARC
 # ==============================================================================
 
 
 def get_absolute_and_median(data, groupby=""): 
+
+    """
+    Get absolute and median ARC
+
+    Paramaters 
+
+    ----------
+    data : Data.Frame 
+        A data object containing the ARC
+
+    groupby : str
+        Individual analysis units in the data.
+
+    """
     
     data["abs_arc"] = data["arc"].abs()
 
@@ -140,3 +204,53 @@ def get_absolute_and_median(data, groupby=""):
     )
 
     return data
+
+
+# ==============================================================================
+#                  FUNCTION TO GET THE MINIMUM AND MAXIMUM LARC
+# ==============================================================================
+
+def get_min_max_larc(ts, analysis_unit, season, larc):
+
+    """
+    Get the median, minimum and maximum LARC per unit of analysis and season
+
+    Parameters 
+
+    ----------
+    ts : Data.Frame
+        A pandas Data Frame returned by `estimate_local_arc()` function. 
+    
+    analysis_unit : str
+        Individual analysis units in the data.
+
+    season : str
+        A column holding information on the distinct seasonal variation of a 
+        given variable. This is used to group the operations by seasons.
+    
+    larc : float
+        A column holding the LARC. 
+    
+
+    Return 
+    --------
+    A summarised pandas Data Frame by `analysis_unit` and by `season`, with 
+    median, minimum and maximum LARC per groups.
+
+    """
+
+    ### Get the median ARC by season ----
+    x = (
+        ts
+        .assign(larc=lambda row: row[larc].abs())
+        .groupby([analysis_unit, season])
+        .agg(
+            median_larc=(larc, "median"),
+            min_larc=(larc, "min"),
+            max_larc=(larc, "max")
+        )
+        .reset_index()
+    )
+
+    return x
+    
