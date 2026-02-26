@@ -114,7 +114,7 @@ pneumonia = (
 ari_plot_ts = (
     ari
     .pipe(utils.summarise_disease, "time", "%B %Y", "M")
-    .pipe(utils.create_time_plot, "Jan 2021", "Dec 2024", "ARI", "M")
+    .pipe(utils.create_time_plot, "Jan 2021", "Dec 2025", "ARI", "M")
 )
 
 ### Decompose ---- 
@@ -146,7 +146,7 @@ snl.plot_seasonal_subseries(ari_dec, disease_name="ARI")
 awd_plot_ts = (
     awd
     .pipe(utils.summarise_disease, "time", "%B %Y", "M")
-    .pipe(utils.create_time_plot, "Jan 2021", "Dec 2024", "AWD", "M")
+    .pipe(utils.create_time_plot, "Jan 2021", "Dec 2025", "AWD", "M")
 )
 
 ### Decompose ---- 
@@ -178,7 +178,7 @@ snl.plot_seasonal_subseries(awd_dec, disease_name="AWD")
 measles_plot_ts = (
     measles
     .pipe(utils.summarise_disease, "time", "%B %Y", "M")
-    .pipe(utils.create_time_plot, "Jan 2021", "Dec 2024", "ARI", "M")
+    .pipe(utils.create_time_plot, "Jan 2021", "Dec 2025", "ARI", "M")
 )
 
 ### Decompose ---- 
@@ -210,7 +210,7 @@ snl.plot_seasonal_subseries(measles_dec, disease_name="Measles")
 pneummonia_plot_ts = (
     pneumonia
     .pipe(utils.summarise_disease, "time", "%B %Y", "M")
-    .pipe(utils.create_time_plot, "Jan 2021", "Dec 2024", "Pneumonia", "M")
+    .pipe(utils.create_time_plot, "Jan 2021", "Dec 2025", "Pneumonia", "M")
 )
 
 ### Decompose ---- 
