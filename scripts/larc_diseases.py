@@ -62,13 +62,11 @@ ari_larc_2021_2024 = (
     .round()
 )
 
-### LARC: 2025 ----
-ari_larc_2025 = (
-    ari_trend
-    .query("year == 2025")
-    .pipe(trend.estimate_local_arc, "province")
-    .pipe(trend.get_min_max_larc, "province", "season", "larc")
-    .round()
+### Apply IPC-RAAp anomaly detection logic ----
+ari_evolution = trend.apply_anomaly_detection_logic(
+    ari_trend, 
+    ari_larc_2021_2024,
+    "province"
 )
 
 ## ---- AWD  -------------------------------------------------------------------
@@ -111,13 +109,11 @@ awd_larc_2021_2024 = (
     .round()
 )
 
-### LARC: 2025 ----
-awd_larc_2025 = (
-    awd_trend
-    .query("year == 2025")
-    .pipe(trend.estimate_local_arc, "province")
-    .pipe(trend.get_min_max_larc, "province", "season", "larc")
-    .round()
+### Apply IPC-RAAp anomaly detection logic ----
+awd_evolution = trend.apply_anomaly_detection_logic(
+    awd_trend, 
+    awd_larc_2021_2024,
+    "province"
 )
 
 ## ---- Measles ----------------------------------------------------------------
@@ -160,13 +156,11 @@ measles_larc_2021_2024 = (
     .round()
 )
 
-### LARC: 2025 ----
-measles_larc_2025 = (
-    measles_trend
-    .query("year == 2025")
-    .pipe(trend.estimate_local_arc, "province")
-    .pipe(trend.get_min_max_larc, "province", "season", "larc")
-    .round()
+### Apply IPC-RAAp anomaly detection logic ----
+measles_evolution = trend.apply_anomaly_detection_logic(
+    measles_trend, 
+    measles_larc_2021_2024,
+    "province"
 )
 
 ## ---- Pneumonia --------------------------------------------------------------
@@ -209,13 +203,11 @@ pneumonia_larc_2021_2024 = (
     .round()
 )
 
-### LARC: 2025---
-pneumonia_larc_2024 = (
-    pneumonia_trend
-    .query("year == 2025")
-    .pipe(trend.estimate_local_arc, "province")
-    .pipe(trend.get_min_max_larc, "province", "season", "larc")
-    .round()
+### Apply IPC-RAAp anomaly detection logic ----
+pneumonia_evolution = trend.apply_anomaly_detection_logic(
+    pneumonia_trend, 
+    pneumonia_larc_2021_2024,
+    "province"
 )
 
 
