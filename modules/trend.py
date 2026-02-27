@@ -230,3 +230,90 @@ def get_min_max_larc(ts, analysis_unit, season, larc):
     )
 
     return x
+
+
+# ==============================================================================
+#                  FUNCTION TO APPLY ANOMALY DETECTION LOGIC
+# ==============================================================================
+
+
+def apply_anomaly_detection_logic(ts1, ts2, analysis_unit):
+
+    """
+    Apply RAAp anomaly detection criterion
+
+    Parameters 
+    ----------
+    ts1 : Data.Frame
+        A time-series data frame returned by `estimate_local_arc()`.
+    
+    ts2 : Data.Frame
+        A time-series data frame returned by `get_min_max_larc()`
+
+    analysis_unit : str
+        A column in either data frames containing the analysis units. The name
+        should be the same in both data frames.
+
+    Return
+
+    --------
+    A data frame with a column named "anomly" indicating whether a given ARC is 
+    follow a typical evolution as seen in its historical data; otherwise, Alarm
+    if the evolution is higher than the maximum ARC ever yielded by a given season; 
+    or Alert if in between the median and the maximum.
+    """
+
+    # Container for results
+    results = []
+
+    # Loop over each province (analysis unit)
+    for unit in ts1[analysis_unit].unique():
+
+        # 1. Subset 2025 data for this province
+        df1 = (
+            ts1
+            .query("year == 2025")
+            .query(f"`{analysis_unit}` == @unit")
+            .pipe(estimate_local_arc, analysis_unit)
+            .assign(larc=lambda d: d.larc.abs())
+            .round()
+        )
+
+        # 2. Subset historical thresholds for this province
+        df2 = ts2.query(f"`{analysis_unit}` == @unit")
+
+        # 3. Loop over seasons (High, Low)
+        for season in df1["season"].unique():
+
+            # 3a. Subset 2025 rows for this season
+            df1_season = df1.query("season == @season")
+
+            # 3b. Get the historical thresholds for this season
+            row2 = df2.query("season == @season")
+
+            if row2.empty:
+                # No thresholds for this season → skip
+                continue
+
+            max_larc = row2["max_larc"].iloc[0]
+            med_larc = row2["median_larc"].iloc[0]
+
+            # 3c. Apply anomaly logic row-by-row
+            anomalies = []
+            for val in df1_season["larc"]:
+                if val > max_larc:
+                    anomalies.append("Alarm")
+                elif val > med_larc:
+                    anomalies.append("Alert")
+                else:
+                    anomalies.append("Typical")
+
+            # 3d. Attach anomaly labels
+            df1_season = df1_season.assign(anomaly=anomalies)
+
+            # 3e. Store results
+            results.append(df1_season)
+
+    # Combine all provinces + seasons
+    return pd.concat(results, ignore_index=True)
+
