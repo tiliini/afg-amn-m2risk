@@ -294,3 +294,23 @@ def pull_component_and_concatenate(dct, component):
 
     ## Concatenate all provinces into one long DataFrame ----
     return pd.concat(dfs, ignore_index=False)
+
+
+### Apply univariate NOCB imputation for missing values ----
+def apply_univariate_nocb_inputation(data):
+
+    dfs = []
+    provinces = data.province.unique()
+    
+    for province in provinces:
+        subset = data.query("`province` == @province")
+        x = subset.isnull().values.any()
+        if x:
+            p = subset.bfill()
+            dfs.append(p)
+        else:
+            dfs.append(subset)
+
+# Combine everything into one long DataFrame
+    return pd.concat(dfs, ignore_index=True)
+

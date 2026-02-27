@@ -12,14 +12,13 @@ exec(open("scripts/decompose-admissions-amn.py").read())
 ## ---- Decompose admission data on childhood diseases -------------------------
 
 
-exec(open(file="scripts/decompose_diseases_admissions.py").read())
+exec(open("scripts/decompose_disease_admissions.py").read())
 
 
-## ---- Analyse the trend component --------------------------------------------
+## ---- Estimate Average Rate of Change ----------------------------------------
 
 
-exec(open("scripts/seasonal_arc.py").read())
-exec(open("scripts/local_average_rate_of_change.py").read())
+exec(open("scripts/larc_diseases.py").read())
 
 
 # ============================== End of Workflow ===============================
