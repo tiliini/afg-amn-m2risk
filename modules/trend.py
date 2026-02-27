@@ -302,7 +302,9 @@ def apply_anomaly_detection_logic(ts1, ts2, analysis_unit):
             # 3c. Apply anomaly logic row-by-row
             anomalies = []
             for val in df1_season["larc"]:
-                if val > max_larc:
+                if pd.isna(val):
+                    anomalies.append(np.nan)
+                elif val >= max_larc:
                     anomalies.append("Alarm")
                 elif val > med_larc:
                     anomalies.append("Alert")
