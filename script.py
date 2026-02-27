@@ -12,7 +12,7 @@ exec(open("scripts/decompose-admissions-amn.py").read())
 ## ---- Decompose admission data on childhood diseases -------------------------
 
 
-exec(open(file="scripts/decompose_disease_admissions_updated.py").read())
+exec(open("scripts/decompose_disease_admissions.py").read())
 
 
 ## ---- Estimate Average Rate of Change ----------------------------------------
