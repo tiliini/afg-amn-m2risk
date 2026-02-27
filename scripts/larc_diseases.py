@@ -12,7 +12,7 @@ import modules.trend as trend
 from modules import utils
 
 import sys
-from scripts.decompose_disease_admissions_updated import ari, awd, measles, pneumonia
+from scripts.decompose_disease_admissions import ari, awd, measles, pneumonia
 sys.path.append("python")
 import matplotlib.pyplot as plt
 
