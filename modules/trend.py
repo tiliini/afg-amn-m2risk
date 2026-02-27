@@ -245,10 +245,11 @@ def apply_anomaly_detection_logic(ts1, ts2, analysis_unit):
     Parameters 
     ----------
     ts1 : Data.Frame
-        A time-series data frame returned by `estimate_local_arc()`.
+        A time-series data frame with a trend and season column.
     
     ts2 : Data.Frame
-        A time-series data frame returned by `get_min_max_larc()`
+        A time-series data frame returned after applying `estimate_local_arc()`, and 
+         `get_min_max_larc()`.
 
     analysis_unit : str
         A column in either data frames containing the analysis units. The name
